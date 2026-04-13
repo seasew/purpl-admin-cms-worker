@@ -13,7 +13,14 @@
 	"upload_source_maps": true,
 	"compatibility_flags": [
 		"nodejs_compat"
-	]
+	],
+	"kv_namespaces": [
+		{
+			"binding": "KV",
+			"id": "f5220b2fa98448b394cd0e47b96cf1ad",
+			"remote": true
+		}
+	],
 	/**
 	 * Smart Placement
 	 * https://developers.cloudflare.com/workers/configuration/smart-placement/#smart-placement
@@ -31,7 +38,17 @@
 	 * Note: Use secrets to store sensitive data.
 	 * https://developers.cloudflare.com/workers/configuration/secrets/
 	 */
-	// "vars": {  "MY_VARIABLE": "production_value" }
+	"vars": {
+		"GITHUB_OWNER": "PURPL-Purdue",
+		"GITHUB_REPO": "PURPL-Purdue.github.io",
+	},
+	/**
+	 * Secrets
+	 * Admin secrets (use: wrangler secret put JWT_SECRET)
+	 */
+	"secrets": {
+		"required": ["JWT_SECRET", "GITHUB_PAT"]
+	}
 	/**
 	 * Static Assets
 	 * https://developers.cloudflare.com/workers/static-assets/binding/
