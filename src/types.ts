@@ -9,6 +9,7 @@ export type Bindings = {
 	GITHUB_OWNER: string,
 	GITHUB_REPO: string,
 	GITHUB_BASE_BRANCH: string,
+	GITHUB_TARGET_BRANCH: string,
 	ALLOWED_ORIGIN: string
 }
 

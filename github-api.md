@@ -8,7 +8,7 @@ The fine-grained token must have the following permission set:
 
 GET /repos/{owner}/{repo}/contents/{path}
 - gets repository content
-- https://api.github.com/repos/google/tracing-framework/contents/index.html\?ref=gh-pages
+- Example path: https://api.github.com/repos/google/tracing-framework/contents/index.html\?ref=gh-pages
 The fine-grained token must have at least one of the following permission sets:
 
     "Contents" repository permissions (write)

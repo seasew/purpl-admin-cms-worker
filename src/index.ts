@@ -7,6 +7,7 @@ import { TaskList } from "./endpoints/taskList";
 
 import { AdminLogin } from "./endpoints/adminLogin";
 import { FileFetch } from "./endpoints/fileFetch";
+import { DirectoryFetch } from "./endpoints/directoryFetch";
 import { Bindings } from "./types";
 
 // Start a Hono app
@@ -25,6 +26,7 @@ openapi.delete("/api/tasks/:taskSlug", TaskDelete);
 
 openapi.post("/api/login", AdminLogin);
 openapi.get("/api/files/:filePath", FileFetch);
+openapi.get("/api/directory/:dir", DirectoryFetch);
 
 // You may also register routes for non OpenAPI directly on Hono
 // app.get('/test', (c) => c.text('Hono!'))

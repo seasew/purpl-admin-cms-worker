@@ -41,6 +41,7 @@
 	"vars": {
 		"GITHUB_OWNER": "PURPL-Purdue",
 		"GITHUB_REPO": "PURPL-Purdue.github.io",
+		"GITHUB_TARGET_BRANCH": "master",
 	},
 	/**
 	 * Secrets
