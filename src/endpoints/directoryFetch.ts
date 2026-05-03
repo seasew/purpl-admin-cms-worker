@@ -3,14 +3,38 @@ import { z } from "zod";
 import type { AppContext } from "../types";
 import { verify } from "hono/jwt";
 
-const DirectoryFetchResponse = z.object({
-	sha: Str({ description: "SHA of the target directory tree" }),
-});
+type FileNode = { type: "blob"; sha: string; size: number };
+type DirNode = { type: "tree"; children: Record<string, FileNode | DirNode> };
+type TreeNode = FileNode | DirNode;
+
+function buildTree(
+	entries: Array<{ path: string; type: string; sha: string; size?: number }>
+): Record<string, TreeNode> {
+	const root: Record<string, TreeNode> = {};
+	for (const entry of entries) {
+		const parts = entry.path.split("/");
+		let node = root as Record<string, TreeNode>;
+		for (let i = 0; i < parts.length - 1; i++) {
+			const part = parts[i];
+			if (!node[part]) {
+				node[part] = { type: "tree", children: {} };
+			}
+			node = (node[part] as DirNode).children;
+		}
+		const name = parts[parts.length - 1];
+		if (entry.type === "blob") {
+			node[name] = { type: "blob", sha: entry.sha, size: entry.size ?? 0 };
+		} else if (entry.type === "tree" && !node[name]) {
+			node[name] = { type: "tree", children: {} };
+		}
+	}
+	return root;
+}
 
 export class DirectoryFetch extends OpenAPIRoute {
 	schema = {
 		tags: ["Admin"],
-		summary: "Get the SHA of a repository directory",
+		summary: "Read all files under a repository directory as a nested tree",
 		request: {
 			params: z.object({
 				dir: Str({ description: "Target directory path relative to repo root (e.g., src%2Fjson)" }),
@@ -21,10 +45,13 @@ export class DirectoryFetch extends OpenAPIRoute {
 		},
 		responses: {
 			"200": {
-				description: "Directory SHA fetched successfully",
+				description: "Directory tree fetched successfully",
 				content: {
 					"application/json": {
-						schema: DirectoryFetchResponse,
+						schema: z.object({
+							tree: z.record(z.any()),
+							truncated: z.boolean(),
+						}),
 					},
 				},
 			},
@@ -82,7 +109,7 @@ export class DirectoryFetch extends OpenAPIRoute {
 			}
 			let treeSha = (await commitRes.json() as { tree: { sha: string } }).tree.sha;
 
-			// Walk the tree along each path segment
+			// Walk the tree along each path segment to reach the target directory
 			for (const segment of segments) {
 				const treeRes = await fetch(
 					`${base}/git/trees/${treeSha}`,
@@ -102,7 +129,21 @@ export class DirectoryFetch extends OpenAPIRoute {
 				treeSha = entry.sha;
 			}
 
-			return c.json({ sha: treeSha });
+			// Fetch the full recursive tree for the target directory
+			const recursiveRes = await fetch(
+				`${base}/git/trees/${treeSha}?recursive=1`,
+				{ headers: githubHeaders }
+			);
+			if (!recursiveRes.ok) {
+				console.error(`Failed to fetch recursive tree: ${recursiveRes.status} ${recursiveRes.statusText}`);
+				return c.json({ error: "Failed to fetch directory tree" }, { status: 500 });
+			}
+			const recursiveData = await recursiveRes.json() as {
+				tree: Array<{ path: string; type: string; sha: string; size?: number }>;
+				truncated: boolean;
+			};
+
+			return c.json({ tree: buildTree(recursiveData.tree), truncated: recursiveData.truncated });
 		} catch (error) {
 			console.error("Error fetching directory:", error);
 			return c.json({ error: "Internal server error" }, { status: 500 });

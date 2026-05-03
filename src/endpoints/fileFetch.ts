@@ -63,9 +63,6 @@ export class FileFetch extends OpenAPIRoute {
 		}
 
 		try {
-			console.log(c.env.GITHUB_PAT);
-			console.log(c.env.GITHUB_OWNER);
-			console.log(c.env.GITHUB_REPO);
 			// Call GitHub API to get file content
 			// https://docs.github.com/en/rest/repos/contents?apiVersion=2022-11-28#get-repository-content
 			const response = await fetch(
