@@ -42,7 +42,7 @@
 		"GITHUB_OWNER": "PURPL-Purdue",
 		"GITHUB_REPO": "PURPL-Purdue.github.io",
 		"GITHUB_TARGET_BRANCH": "master",
-		"ALLOWED_ORIGIN": "http://localhost:3000",
+		"ALLOWED_ORIGIN": "https://purpl.space",
 	},
 	/**
 	 * Secrets
