@@ -6,8 +6,8 @@ import { sign } from "hono/jwt";
 
 // Request schema
 const LoginRequest = z.object({
-	username: Str({ example: "purpladmin" }),
-	password: Str({ example: "point krypton music peers" }),
+	username: Str({ example: "your-admin-username" }),
+	password: Str({ example: "your admin password" }),
 });
 
 // Response schema

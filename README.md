@@ -81,7 +81,6 @@ src/
     adminLogin.ts
     fileFetch.ts
     directoryFetch.ts
-    directoryList.ts
     prCreate.ts
 scripts/
   set-admin-credentials.js   # Admin credential bootstrap script
